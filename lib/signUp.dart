@@ -27,11 +27,13 @@ class _SignUpState extends State<SignUp> {
           children: [
             SafeArea(
               child: Container(
-                height: 200,
-                width: 200,
-                padding: EdgeInsets.only(left: 35, top: 130),
-                child: Image.asset("assests/logo.png", fit: BoxFit.cover,)
-              ),
+                  height: 200,
+                  width: 200,
+                  padding: EdgeInsets.only(left: 35, top: 130),
+                  child: Image.asset(
+                    "assests/logo.png",
+                    fit: BoxFit.cover,
+                  )),
             ),
             Form(
               key: _formKey,
@@ -131,7 +133,7 @@ class _SignUpState extends State<SignUp> {
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 20,
-                                    color: Colors.black),
+                                    color: Colors.white),
                               ),
                             ),
                           ),

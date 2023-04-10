@@ -28,11 +28,13 @@ class _LogInState extends State<LogIn> {
           children: [
             SafeArea(
               child: Container(
-                height: 200,
-                width: 200,
-                padding: EdgeInsets.only(left: 35, top: 130),
-                child: Image.asset("assests/logo.png", fit: BoxFit.cover,)
-              ),
+                  height: 200,
+                  width: 200,
+                  padding: EdgeInsets.only(left: 35, top: 130),
+                  child: Image.asset(
+                    "assests/logo.png",
+                    fit: BoxFit.cover,
+                  )),
             ),
             Form(
               key: _formKey,
@@ -55,8 +57,7 @@ class _LogInState extends State<LogIn> {
                             ),
                             border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
-                                borderSide:
-                                    BorderSide(color: Colors.white))),
+                                borderSide: BorderSide(color: Colors.white))),
                       ),
                       const SizedBox(
                         height: 20,
@@ -73,12 +74,10 @@ class _LogInState extends State<LogIn> {
                             ),
                             enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
-                                borderSide:
-                                    BorderSide(color: Colors.white)),
+                                borderSide: BorderSide(color: Colors.white)),
                             border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
-                                borderSide:
-                                    BorderSide(color: Colors.white))),
+                                borderSide: BorderSide(color: Colors.white))),
                       ),
                       const SizedBox(
                         height: 20,
@@ -101,8 +100,7 @@ class _LogInState extends State<LogIn> {
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (context) =>
-                                              HomeScreen(),
+                                          builder: (context) => HomeScreen(),
                                         ));
                                   });
                                 } on FirebaseAuthException catch (e) {
@@ -117,7 +115,7 @@ class _LogInState extends State<LogIn> {
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 20,
-                                    color: Colors.black),
+                                    color: Colors.white),
                               ),
                             ),
                           ),

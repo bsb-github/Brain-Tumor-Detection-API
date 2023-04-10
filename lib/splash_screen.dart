@@ -44,22 +44,18 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.blueGrey,
+      backgroundColor: Colors.blueGrey[900],
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const Center(
-            child: Icon(
-              Icons.android_outlined,
-              size: 150,
-            ),
-          ),
-          AnimatedTextKit(animatedTexts: [
-            TyperAnimatedText('Welcome To My App'),
-            TyperAnimatedText('you must know what to do,'),
-            TyperAnimatedText('and then do your best'),
-          ]),
+          Center(child: Image.asset("assests/logo.png")),
+          const SizedBox(height: 50,),
+          Text("Disease Detection Using CNN", style: TextStyle(
+            fontSize: 24,
+            color: Colors.deepOrangeAccent
+
+          ),)
         ],
       ),
     );
