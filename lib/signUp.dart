@@ -31,12 +31,19 @@ class _SignUpState extends State<SignUp> {
                     fit: BoxFit.cover,
                   )),
             ),
+            const SizedBox(
+              height: 50,
+            ),
+            Text(
+              "Disease Detection Using CNN",
+              style: TextStyle(fontSize: 24, color: Colors.deepOrangeAccent),
+            ),
             Form(
               key: _formKey,
               child: SingleChildScrollView(
                 child: Container(
                   padding: EdgeInsets.only(
-                      top: MediaQuery.of(context).size.height * 0.2,
+                      top: MediaQuery.of(context).size.height * 0.18,
                       right: 35,
                       left: 35),
                   child: Column(
