@@ -2,7 +2,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fyp/firebase_options.dart';
-import 'package:fyp/home.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '/splash_screen.dart';
 
@@ -11,17 +10,17 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const MyApp());
+  runApp(const DDC());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class DDC extends StatelessWidget {
+  const DDC({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: SplashScreen(),
+      home: const SplashScreen(),
       theme: ThemeData(
         inputDecorationTheme: InputDecorationTheme(
             iconColor: Colors.white,

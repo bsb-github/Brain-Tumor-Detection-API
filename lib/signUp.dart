@@ -1,11 +1,7 @@
-import 'dart:ui';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-
-import 'home.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({super.key});
@@ -47,6 +43,12 @@ class _SignUpState extends State<SignUp> {
                     children: [
                       TextFormField(
                         controller: userNameController,
+                        validator: (val) {
+                          if (val!.isEmpty) {
+                            return "Field Cannot be Empty";
+                          }
+                          return null;
+                        },
                         style: TextStyle(color: Colors.white),
                         decoration: InputDecoration(
                             hintText: "User Name",
@@ -63,6 +65,12 @@ class _SignUpState extends State<SignUp> {
                       ),
                       TextFormField(
                         controller: emailController,
+                        validator: (val) {
+                          if (val!.isEmpty) {
+                            return "Field Cannot be Empty";
+                          }
+                          return null;
+                        },
                         style: TextStyle(color: Colors.white),
                         decoration: InputDecoration(
                             hintText: "Email",
@@ -80,6 +88,12 @@ class _SignUpState extends State<SignUp> {
                       TextFormField(
                         controller: passwordController,
                         obscureText: true,
+                        validator: (val) {
+                          if (val!.isEmpty) {
+                            return "Field Cannot be Empty";
+                          }
+                          return null;
+                        },
                         style: TextStyle(color: Colors.white),
                         decoration: InputDecoration(
                             hintText: "Password",

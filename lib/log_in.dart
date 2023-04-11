@@ -1,9 +1,5 @@
-import 'dart:ui';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fyp/signUp.dart';
 import '/home.dart';
@@ -48,6 +44,12 @@ class _LogInState extends State<LogIn> {
                     children: [
                       TextFormField(
                         controller: emailController,
+                        validator: (val) {
+                          if (val!.isEmpty) {
+                            return "Field Cannot be Empty";
+                          }
+                          return null;
+                        },
                         style: TextStyle(color: Colors.white),
                         decoration: InputDecoration(
                             hintText: "Email",
@@ -65,6 +67,12 @@ class _LogInState extends State<LogIn> {
                       TextFormField(
                         controller: passwordController,
                         obscureText: true,
+                        validator: (val) {
+                          if (val!.isEmpty) {
+                            return "Field Cannot be Empty";
+                          }
+                          return null;
+                        },
                         style: TextStyle(color: Colors.white),
                         decoration: InputDecoration(
                             hintText: "Password",
@@ -87,6 +95,7 @@ class _LogInState extends State<LogIn> {
                         children: [
                           InkWell(
                             onTap: () async {
+                              // lOGIN fUNCTION
                               if (_formKey.currentState!.validate()) {
                                 EasyLoading.show();
                                 try {
