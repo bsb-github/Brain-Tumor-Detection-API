@@ -21,18 +21,22 @@ class _HomeScreenState extends State<HomeScreen> {
   pickImage() async {
     var image =
         await ImagePicker.platform.getImage(source: ImageSource.gallery);
-    if (image == null) return null;
+    if (image == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Please Pick An Image to Continue")));
+      return null;
+    }
     setState(() {
       _image = File(image.path);
     });
-    classifyImage(image);
+    classifyImage(image.path);
   }
 
-  classifyImage(XFile image) async {
+  classifyImage(String imagePath) async {
     EasyLoading.show();
     var request = http.MultipartRequest(
-        'POST', Uri.parse('http://c26f-35-245-75-3.ngrok.io/classify'));
-    request.files.add(await http.MultipartFile.fromPath('file', image.path));
+        'POST', Uri.parse('http://3253-34-67-174-6.ngrok.io/classify'));
+    request.files.add(await http.MultipartFile.fromPath('file', imagePath));
     http.StreamedResponse response = await request.send();
     if (response.statusCode == 200) {
       EasyLoading.showSuccess("Done");
@@ -119,7 +123,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           },
                           child: Container(
                             child: const Text(
-                              "Check Your MRI",
+                              "Pick Your MRI",
                               style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 20,

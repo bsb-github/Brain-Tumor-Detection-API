@@ -1,13 +1,8 @@
 import 'dart:async';
-import 'dart:ui';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
-import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:fyp/home.dart';
 import '/log_in.dart';
-import 'package:animated_text_kit/animated_text_kit.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -21,23 +16,23 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    Timer(Duration(seconds: 6), () {
+    Timer(const Duration(seconds: 4), () {
       checkCurrentUser();
     });
   }
 
-  void checkCurrentUser() async {
-    if (await FirebaseAuth.instance.currentUser == null) {
+  void checkCurrentUser() {
+    if (FirebaseAuth.instance.currentUser == null) {
       Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => LogIn(),
+            builder: (context) => const LogIn(),
           ));
     } else {
       Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => HomeScreen(),
+            builder: (context) => const HomeScreen(),
           ));
     }
   }
@@ -50,12 +45,13 @@ class _SplashScreenState extends State<SplashScreen> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Center(child: Image.asset("assests/logo.png")),
-          const SizedBox(height: 50,),
-          Text("Disease Detection Using CNN", style: TextStyle(
-            fontSize: 24,
-            color: Colors.deepOrangeAccent
-
-          ),)
+          const SizedBox(
+            height: 50,
+          ),
+          Text(
+            "Disease Detection Using CNN",
+            style: TextStyle(fontSize: 24, color: Colors.deepOrangeAccent),
+          )
         ],
       ),
     );

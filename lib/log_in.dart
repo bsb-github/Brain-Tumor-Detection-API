@@ -13,8 +13,8 @@ class LogIn extends StatefulWidget {
 
 class _LogInState extends State<LogIn> {
   @override
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
   Widget build(BuildContext context) {
@@ -43,7 +43,7 @@ class _LogInState extends State<LogIn> {
                   child: Column(
                     children: [
                       TextFormField(
-                        controller: emailController,
+                        controller: _emailController,
                         validator: (val) {
                           if (val!.isEmpty) {
                             return "Field Cannot be Empty";
@@ -65,7 +65,7 @@ class _LogInState extends State<LogIn> {
                         height: 20,
                       ),
                       TextFormField(
-                        controller: passwordController,
+                        controller: _passwordController,
                         obscureText: true,
                         validator: (val) {
                           if (val!.isEmpty) {
@@ -93,7 +93,7 @@ class _LogInState extends State<LogIn> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          InkWell(
+                          GestureDetector(
                             onTap: () async {
                               // lOGIN fUNCTION
                               if (_formKey.currentState!.validate()) {
@@ -101,8 +101,8 @@ class _LogInState extends State<LogIn> {
                                 try {
                                   FirebaseAuth.instance
                                       .signInWithEmailAndPassword(
-                                          email: emailController.text,
-                                          password: passwordController.text)
+                                          email: _emailController.text,
+                                          password: _passwordController.text)
                                       .then((value) {
                                     EasyLoading.showSuccess("Success");
                                     EasyLoading.dismiss();

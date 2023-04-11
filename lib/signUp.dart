@@ -132,8 +132,8 @@ class _SignUpState extends State<SignUp> {
                                     FirebaseAuth.instance.signOut();
                                     EasyLoading.showSuccess(
                                         "You can now login");
-
                                     EasyLoading.dismiss();
+                                    Navigator.pop(context);
                                   });
                                 } on FirebaseAuthException catch (e) {
                                   EasyLoading.showError(e.code);

@@ -19,7 +19,7 @@ class DDC extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
+      // debugShowCheckedModeBanner: false,
       home: const SplashScreen(),
       theme: ThemeData(
         inputDecorationTheme: InputDecorationTheme(
@@ -27,7 +27,7 @@ class DDC extends StatelessWidget {
             hintStyle: TextStyle(color: Colors.white),
             focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(color: Colors.white)),
+                borderSide: BorderSide(color: Colors.deepOrangeAccent)),
             enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
                 borderSide: BorderSide(color: Colors.white)),
