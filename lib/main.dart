@@ -22,6 +22,18 @@ class DDC extends StatelessWidget {
       // debugShowCheckedModeBanner: false,
       home: const SplashScreen(),
       theme: ThemeData(
+        scaffoldBackgroundColor: Colors.blueGrey[900],
+        listTileTheme: ListTileThemeData(
+          textColor: Colors.deepOrangeAccent,
+          shape: Border.all(
+            color: Colors.deepOrangeAccent,
+            width: 2,
+          ),
+        ),
+        appBarTheme: AppBarTheme(
+          color: Colors.blueGrey[900],
+          elevation: 0,
+        ),
         inputDecorationTheme: InputDecorationTheme(
             iconColor: Colors.white,
             hintStyle: TextStyle(color: Colors.white),

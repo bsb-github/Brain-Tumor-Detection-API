@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fyp/home.dart';
 import '/log_in.dart';
+import 'Modal/UserModal.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -16,19 +18,29 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
+
+    //FirebaseAuth.instance.signOut();
     Timer(const Duration(seconds: 4), () {
       checkCurrentUser();
     });
   }
 
-  void checkCurrentUser() {
-    if (FirebaseAuth.instance.currentUser == null) {
+  void checkCurrentUser() async {
+    if ((FirebaseAuth.instance.currentUser == null)) {
       Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => const LogIn(),
           ));
     } else {
+      await FirebaseFirestore.instance
+          .collection("users")
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .get()
+          .then((value) {
+        UserList.userList.clear();
+        UserList.userList.add(UserModal.fromSnapshot(value));
+      });
       Navigator.push(
           context,
           MaterialPageRoute(
