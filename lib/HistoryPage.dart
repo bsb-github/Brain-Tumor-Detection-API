@@ -13,6 +13,7 @@ class HistoryPage extends StatefulWidget {
 
 class _HistoryPageState extends State<HistoryPage> {
   List<HistoryModal> historyList = [];
+  List<HistoryModal> secondHistoryList = [];
   bool isLoading = true;
   void getHistory() async {
     var data = await FirebaseFirestore.instance
@@ -26,6 +27,7 @@ class _HistoryPageState extends State<HistoryPage> {
       });
     }
     setState(() {
+      secondHistoryList.addAll(historyList);
       isLoading = false;
     });
   }
@@ -34,30 +36,23 @@ class _HistoryPageState extends State<HistoryPage> {
   void initState() {
     // TODO: implement initState
     getHistory();
+
     super.initState();
   }
 
   search(String name) {
     List<HistoryModal> searchList = [];
     searchList.addAll(historyList);
-    if (name.isNotEmpty) {
-      List<HistoryModal> dummyListData = [];
-      searchList.forEach((item) {
-        if (item.name.contains(name)) {
-          dummyListData.add(item);
-        }
-      });
-      setState(() {
-        historyList.clear();
-        historyList.addAll(dummyListData);
-      });
-      return;
-    } else {
-      setState(() {
-        historyList.clear();
-        historyList.addAll(searchList);
-      });
-    }
+    List<HistoryModal> dummyListData = [];
+    searchList.forEach((item) {
+      if (item.name.contains(name)) {
+        dummyListData.add(item);
+      }
+    });
+    setState(() {
+      historyList.clear();
+      historyList.addAll(dummyListData);
+    });
   }
 
   @override
@@ -65,30 +60,46 @@ class _HistoryPageState extends State<HistoryPage> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: Text("History"),
+          title: const Text("History"),
         ),
         body: !isLoading
             ? Column(
                 children: [
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: TextField(
+                    child: TextFormField(
                       onChanged: (value) {
-                        search(value);
+                        if (value.length == 0) {
+                          setState(() {
+                            historyList.clear();
+                            historyList.addAll(secondHistoryList);
+                          });
+                        } else {
+                          setState(() {
+                            historyList.clear();
+                            historyList.addAll(secondHistoryList);
+                          });
+                          search(value);
+                        }
                       },
+                      style: TextStyle(color: Colors.white),
                       decoration: InputDecoration(
                           hintText: "Search",
-                          prefixIcon: Icon(Icons.search),
+                          prefixIcon: const Icon(
+                            Icons.search,
+                            color: Colors.white,
+                          ),
                           border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(20))),
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 20,
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: ListView.builder(
+                      shrinkWrap: true,
                       itemCount: historyList.length,
                       itemBuilder: (context, index) {
                         return InkWell(
@@ -104,7 +115,7 @@ class _HistoryPageState extends State<HistoryPage> {
                           child: Card(
                             color: Theme.of(context).scaffoldBackgroundColor,
                             child: ListTile(
-                              leading: Icon(
+                              leading: const Icon(
                                 Icons.person,
                                 color: Colors.white,
                               ),
@@ -118,7 +129,7 @@ class _HistoryPageState extends State<HistoryPage> {
                   ),
                 ],
               )
-            : Center(
+            : const Center(
                 child: CircularProgressIndicator(
                   color: Colors.orange,
                 ),
