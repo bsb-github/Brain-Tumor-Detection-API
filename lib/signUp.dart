@@ -34,7 +34,7 @@ class _SignUpState extends State<SignUp> {
                     width: 200,
                     padding: EdgeInsets.only(left: 35, top: 130),
                     child: Image.asset(
-                      "assests/logo.png",
+                      "assets/logo.png",
                       fit: BoxFit.cover,
                     )),
               ),
@@ -277,12 +277,19 @@ class _SignUpState extends State<SignUp> {
                               }
                             },
                             child: Container(
-                              child: const Text(
-                                "Sign Up",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 20,
-                                    color: Colors.white),
+                              height: 50,
+                              width: 150,
+                              decoration: BoxDecoration(
+                                  color: Colors.deepOrangeAccent,
+                                  borderRadius: BorderRadius.circular(10)),
+                              child: Center(
+                                child: const Text(
+                                  "Sign Up",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20,
+                                      color: Colors.white),
+                                ),
                               ),
                             ),
                           ),
@@ -301,7 +308,8 @@ class _SignUpState extends State<SignUp> {
                                   },
                                   child: Text(
                                     "Login",
-                                    style: TextStyle(color: Colors.white),
+                                    style: TextStyle(
+                                        color: Colors.deepOrangeAccent),
                                   )),
                             ],
                           ),

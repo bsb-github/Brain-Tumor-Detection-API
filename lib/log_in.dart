@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:fyp/ForgotPassword.dart';
 import 'package:fyp/Modal/UserModal.dart';
 import 'package:fyp/signUp.dart';
 import '/home.dart';
@@ -31,7 +32,7 @@ class _LogInState extends State<LogIn> {
                     width: 200,
                     padding: EdgeInsets.only(left: 35, top: 130),
                     child: Image.asset(
-                      "assests/logo.png",
+                      "assets/logo.png",
                       fit: BoxFit.cover,
                     )),
               ),
@@ -97,81 +98,106 @@ class _LogInState extends State<LogIn> {
                                   borderRadius: BorderRadius.circular(10),
                                   borderSide: BorderSide(color: Colors.white))),
                         ),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: TextButton(
+                              onPressed: () async {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => ForgotPassword(),
+                                    ));
+                              },
+                              child: Text(
+                                "Forgot Password?",
+                                style: TextStyle(
+                                    color: Colors.deepOrangeAccent,
+                                    fontWeight: FontWeight.bold),
+                              )),
+                        ),
                         const SizedBox(
                           height: 20,
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            GestureDetector(
-                              onTap: () async {
-                                // lOGIN fUNCTION
-                                if (_formKey.currentState!.validate()) {
-                                  EasyLoading.show();
-                                  try {
-                                    FirebaseAuth.instance
-                                        .signInWithEmailAndPassword(
-                                            email: _emailController.text,
-                                            password: _passwordController.text)
-                                        .then((value) async {
-                                      await FirebaseFirestore.instance
-                                          .collection("users")
-                                          .doc(FirebaseAuth
-                                              .instance.currentUser!.uid)
-                                          .get()
-                                          .then((value) {
-                                        UserList.userList.clear();
-                                        UserList.userList
-                                            .add(UserModal.fromSnapshot(value));
-                                      });
-                                      EasyLoading.showSuccess("Success");
-                                      EasyLoading.dismiss();
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => HomeScreen(),
-                                          ));
-                                    });
-                                  } on FirebaseException catch (e) {
-                                    EasyLoading.showError(e.code);
-                                    EasyLoading.dismiss();
-                                  }
-                                }
-                              },
-                              child: Container(
-                                child: const Text(
-                                  "Log In",
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 20,
-                                      color: Colors.white),
-                                ),
+                        GestureDetector(
+                          onTap: () async {
+                            // lOGIN fUNCTION
+                            if (_formKey.currentState!.validate()) {
+                              EasyLoading.show();
+                              try {
+                                FirebaseAuth.instance
+                                    .signInWithEmailAndPassword(
+                                        email: _emailController.text,
+                                        password: _passwordController.text)
+                                    .then((value) async {
+                                  await FirebaseFirestore.instance
+                                      .collection("users")
+                                      .doc(FirebaseAuth
+                                          .instance.currentUser!.uid)
+                                      .get()
+                                      .then((value) {
+                                    UserList.userList.clear();
+                                    UserList.userList
+                                        .add(UserModal.fromSnapshot(value));
+                                  });
+                                  EasyLoading.showSuccess("Success");
+                                  EasyLoading.dismiss();
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => HomeScreen(),
+                                      ));
+                                });
+                              } on FirebaseException catch (e) {
+                                EasyLoading.showError(e.code);
+                                EasyLoading.dismiss();
+                              }
+                            }
+                          },
+                          child: Container(
+                            height: 50,
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                                color: Colors.deepOrangeAccent,
+                                borderRadius: BorderRadius.circular(10)),
+                            child: Center(
+                              child: const Text(
+                                "Log In",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20,
+                                    color: Colors.white),
                               ),
                             ),
-                            Row(
-                              children: [
-                                Text(
-                                  "Not a user ?",
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                                TextButton(
-                                    onPressed: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => SignUp(),
-                                          ));
-                                    },
-                                    child: Text(
-                                      "SignUp",
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold),
-                                    )),
-                              ],
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        GestureDetector(
+                          onTap: () async {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => SignUp(),
+                                ));
+                          },
+                          child: Container(
+                            height: 50,
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(10)),
+                            child: Center(
+                              child: const Text(
+                                "Create account",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20,
+                                    color: Colors.deepOrangeAccent),
+                              ),
                             ),
-                          ],
-                        )
+                          ),
+                        ),
                       ],
                     ),
                   ),

@@ -1,4 +1,9 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'dart:convert';
+import 'package:flutter/services.dart';
+import 'package:fyp/utils/Constants.dart';
+import "package:image/image.dart" as img;
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -10,6 +15,7 @@ import 'package:fyp/Profile.dart';
 import 'package:fyp/log_in.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
+import 'package:logger/logger.dart';
 import 'package:nanoid/nanoid.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -20,10 +26,13 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int data = -1;
+  String data = "";
   File? _image;
   final _nameController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+
+  var logger = Logger();
+  bool _isModelLoaded = false;
 
   pickImage() async {
     var image =
@@ -36,34 +45,248 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _image = File(image.path);
     });
-    classifyImage(image.path);
+    _classifyImage();
   }
 
-  classifyImage(String imagePath) async {
-    EasyLoading.show();
-    var request = http.MultipartRequest('POST',
-        Uri.parse('https://fathomless-journey-56046.herokuapp.com/classify'));
-    request.files.add(await http.MultipartFile.fromPath('file', imagePath));
-    http.StreamedResponse response = await request.send();
+  @override
+  void initState() {
+    super.initState();
+  }
 
-    if (response.statusCode == 200) {
-      EasyLoading.showSuccess("Done");
+  Future<void> _classifyImage() async {
+    EasyLoading.show(status: 'loading...');
+    var url = Uri.parse(Constants.BASE_URL + Constants.MRI_DETECT_URL);
+    var request = http.MultipartRequest('POST', url);
+    request.files.add(await http.MultipartFile.fromPath('file', _image!.path));
+    var res = await request.send();
+    var response = await http.Response.fromStream(res);
+    var result = jsonDecode(response.body);
+    logger.i(result);
+    if (result["result"] == "mri") {
       EasyLoading.dismiss();
-      var prediction = await response.stream.bytesToString();
-      var encodedData = jsonDecode(prediction);
-      print(encodedData);
-      setState(() {
-        data = encodedData["result"][0];
-      });
-      await addHistorytoFirebase();
-      setState(() {
-        data = -1;
-        _image = null;
-        _nameController.text = "";
-      });
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text("Tumor Detected")));
+      _classifyTumor();
     } else {
-      EasyLoading.showError(response.reasonPhrase.toString());
+      data = "No Brain MRI Detected";
       EasyLoading.dismiss();
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text("Incorrect Image"),
+          content: const Text("No Brain MRI Detected"),
+          shadowColor: Colors.deepOrangeAccent,
+          actions: [
+            TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text("Ok"))
+          ],
+        ),
+      );
+    }
+  }
+
+  Future<void> _classifyTumor() async {
+    EasyLoading.show(status: 'loading...');
+    var url = Uri.parse(Constants.BASE_URL + Constants.CLASSIFICATION_URL);
+    var request = http.MultipartRequest('POST', url);
+    request.files.add(await http.MultipartFile.fromPath('file', _image!.path));
+    var res = await request.send();
+    var response = await http.Response.fromStream(res);
+    var result = jsonDecode(response.body);
+    logger.i(result);
+    if (result["result"] == "glioma") {
+      EasyLoading.dismiss();
+      addHistorytoFirebase("Benign: Glioma Tumor");
+      data = "Glioma Tumor";
+      showDialog(
+        context: context,
+        builder: (context) => SimpleDialog(
+          title: Text(
+            "Glioma Tumor",
+            style: TextStyle(color: Colors.white),
+          ),
+          backgroundColor: Colors.blueGrey[900],
+          shadowColor: Colors.deepOrangeAccent,
+          children: [
+            Container(
+              height: 100,
+              width: 100,
+              decoration: BoxDecoration(
+                  image: DecorationImage(
+                      image: FileImage(_image!), fit: BoxFit.cover)),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: Text(
+                "Glioma is a type of tumor that occurs in the brain and spinal cord. Gliomas begin in the gluey supportive cells (glial cells) that surround nerve cells and help them function. The symptoms and treatment options for gliomas depend on the type and location of the glioma.",
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            // create button to pop up the dialog
+
+            Container(
+              margin: EdgeInsets.only(left: 20, right: 20),
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  _nameController.clear();
+                  _image = null;
+                },
+                style: ButtonStyle(
+                    backgroundColor:
+                        MaterialStateProperty.all(Colors.deepOrangeAccent)),
+                child: Text("Ok"),
+              ),
+            )
+          ],
+        ),
+      );
+    } else if (result["result"] == "pituitary") {
+      data = "Pituitary Tumor";
+      EasyLoading.dismiss();
+      addHistorytoFirebase("Malignant: Pituitary Tumor");
+      showDialog(
+        context: context,
+        builder: (context) => SimpleDialog(
+          title: Text(
+            "Pituitary Tumor",
+            style: TextStyle(color: Colors.white),
+          ),
+          backgroundColor: Colors.blueGrey[900],
+          shadowColor: Colors.deepOrangeAccent,
+          children: [
+            Container(
+              height: 100,
+              width: 100,
+              decoration: BoxDecoration(
+                  image: DecorationImage(
+                      image: FileImage(_image!), fit: BoxFit.cover)),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: Text(
+                "Pituitary tumors are abnormal growths that develop in your pituitary gland. Some pituitary tumors result in too many of the hormones that regulate important functions of your body. Some pituitary tumors can cause your pituitary gland to produce lower levels of hormones.",
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            // create button to pop up the dialog
+
+            Container(
+              margin: EdgeInsets.only(left: 20, right: 20),
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  _nameController.clear();
+                  _image = null;
+                },
+                style: ButtonStyle(
+                    backgroundColor:
+                        MaterialStateProperty.all(Colors.deepOrangeAccent)),
+                child: Text("Ok"),
+              ),
+            )
+          ],
+        ),
+      );
+    } else if (result["result"] == "meningioma") {
+      EasyLoading.dismiss();
+      data = "Meningioma Tumor";
+      addHistorytoFirebase("Malignant: Meningioma Tumor");
+      showDialog(
+        context: context,
+        builder: (context) => Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: SimpleDialog(
+            shadowColor: Colors.deepOrangeAccent,
+            title: Text(
+              "Meningioma Tumor",
+              style: TextStyle(color: Colors.white),
+            ),
+            backgroundColor: Colors.blueGrey[900],
+            children: [
+              Container(
+                height: 100,
+                width: 100,
+                decoration: BoxDecoration(
+                    image: DecorationImage(
+                        image: FileImage(_image!), fit: BoxFit.cover)),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Text(
+                  "Meningioma is a tumor that arises from the meninges — the membranes that surround your brain and spinal cord. Although not technically a brain tumor, it is included in this category because it may compress or squeeze the adjacent brain, nerves and vessels.",
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              // create button to pop up the dialog
+
+              Container(
+                margin: EdgeInsets.only(left: 20, right: 20),
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    _nameController.clear();
+                    _image = null;
+                  },
+                  style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all(Colors.deepOrangeAccent)),
+                  child: Text("Ok"),
+                ),
+              )
+            ],
+          ),
+        ),
+      );
+    } else {
+      EasyLoading.dismiss();
+      data = "No Tumor Detected";
+      addHistorytoFirebase("No Tumor");
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          backgroundColor: Colors.blueGrey[900],
+          shadowColor: Colors.deepOrangeAccent,
+          title: const Text(
+            "No Tumor Detected",
+            style: TextStyle(color: Colors.white),
+          ),
+          content: const Text(
+            "No Tumor Detected",
+            style: TextStyle(color: Colors.white),
+          ),
+          actions: [
+            TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  _nameController.clear();
+                  _image = null;
+                },
+                child: const Text("Ok"))
+          ],
+        ),
+      );
     }
   }
 
@@ -91,16 +314,16 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  addHistorytoFirebase() async {
+  addHistorytoFirebase(String result) async {
     var user = FirebaseAuth.instance.currentUser;
     var id = nanoid(10);
     var name = _nameController.text;
     var imageUrl = await updateImage(_image!.path);
-    var data = {
+    var user_data = {
       "id": id,
       "name": name,
       "image": imageUrl,
-      "result": !(this.data == "1") ? "Malignant" : "Benign",
+      "result": result,
       "date": DateTime.now().toString()
     };
     await FirebaseFirestore.instance
@@ -108,7 +331,7 @@ class _HomeScreenState extends State<HomeScreen> {
         .doc(user!.uid)
         .collection("history")
         .doc(id)
-        .set(data);
+        .set(user_data);
   }
 
   @override
@@ -167,11 +390,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
               Container(
-                height: 200,
-                width: 200,
+                height: 300,
+                width: 300,
                 padding: EdgeInsets.only(left: 25, top: 50),
                 child: Image.asset(
-                  "assests/logo.png",
+                  "assets/logo.png",
                   fit: BoxFit.cover,
                 ),
               ),
@@ -233,33 +456,23 @@ class _HomeScreenState extends State<HomeScreen> {
                             }
                           },
                           child: Container(
-                            child: const Text(
-                              "Pick Your MRI",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 20,
-                                  color: Colors.white),
+                            height: 50,
+                            width: MediaQuery.sizeOf(context).width * 0.5,
+                            decoration: BoxDecoration(
+                                color: Colors.deepOrangeAccent,
+                                borderRadius: BorderRadius.circular(10)),
+                            child: Center(
+                              child: const Text(
+                                "Pick Your MRI",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20,
+                                    color: Colors.white),
+                              ),
                             ),
                           ),
                         ),
                       ],
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Container(
-                      child: Text(
-                        data == -1
-                            ? "Description: Select Image to Predict"
-                            : data == 1
-                                ? "Description : Malignant "
-                                : "Description : Benign",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
-                            color: Colors.white),
-                      ),
                     ),
                   ],
                 ),
